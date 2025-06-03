@@ -1,46 +1,55 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
+	"time"
+	"sync"
 )
 
-var todos []string
+func plus(x, y int) int{
+	return x + y
+}
 
-func main() {
-	//入力から読み取りのための準備
-	scanner := bufio.NewScanner(os.Stdin)
+func hello(){
+	fmt.Println("表示成功")
+	return
+}
 
-	for {
-		fmt.Println("\n--- Todo アプリ ---")
-		fmt.Println("1. 追加")
-		fmt.Println("2. 一覧表示")
-		fmt.Println("3. 終了")
-		fmt.Print("番号を入力してください: ")
+func multireturn(a, b int) (int, int){
+	q := a / b
+	r := a * b
+	return q, r
+}
 
-		//ユーザーがエンターキーを押すまで待機
-		scanner.Scan()
-		choice := strings.TrimSpace(scanner.Text())
-
-		switch choice {
-		case "1":
-			fmt.Print("Todoを入力: ")
-			scanner.Scan()
-			todo := scanner.Text()
-			todos = append(todos, todo)
-			fmt.Println("追加しました！")
-		case "2":
-			fmt.Println("\n--- Todo一覧 ---")
-			for i, t := range todos {
-				fmt.Printf("%d. %s\n", i+1, t)
-			}
-		case "3":
-			fmt.Println("終了します。")
-			return
-		default:
-			fmt.Println("無効な入力です。")
-		}
+// 並行処理対象関数
+func normal(s string,){
+	for i := 0; i < 5; i++{
+		// time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
 	}
+}
+
+// 並行処理対象関数
+func gorutine(s string, wg *sync.WaitGroup){
+
+	for i := 0; i < 5; i++{
+		time.Sleep(200 * time.Millisecond)
+		fmt.Println(s)
+	}
+		wg.Done()
+}
+
+
+func main () {
+	result := plus(1, 2)
+	fmt.Println(result)
+	hello()
+	q, r := multireturn(4, 2)
+	fmt.Println(q, r)
+	var wg sync.WaitGroup
+	//wgがdoneされるまで待ってねということ
+	wg.Add(1)
+	normal("hello")
+	go gorutine("world", &wg)
+	wg.Wait()
 }
